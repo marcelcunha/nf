@@ -4,15 +4,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Dados da empresa e certificado A1
+    | Dados da empresa (o certificado A1 é cadastrado em Configurações > Certificado)
     |--------------------------------------------------------------------------
     */
     'company_name' => env('SEFAZ_COMPANY_NAME'),
     'cnpj' => env('SEFAZ_CNPJ'),
     'state' => env('SEFAZ_STATE', 'SP'),
     'environment' => (int) env('SEFAZ_ENVIRONMENT', 2), // 1 = produção, 2 = homologação
-    'certificate_path' => env('SEFAZ_CERTIFICATE_PATH'),
-    'certificate_password' => env('SEFAZ_CERTIFICATE_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------

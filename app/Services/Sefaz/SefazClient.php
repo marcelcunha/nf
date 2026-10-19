@@ -2,7 +2,7 @@
 
 namespace App\Services\Sefaz;
 
-use NFePHP\Common\Certificate;
+use App\Models\SefazCertificate;
 use NFePHP\NFe\Tools;
 use RuntimeException;
 use SimpleXMLElement;
@@ -50,10 +50,10 @@ class SefazClient
 
     private function tools(): Tools
     {
-        $path = config('sefaz.certificate_path');
+        $certificate = SefazCertificate::current();
 
-        if (! $path || ! is_readable($path)) {
-            throw new RuntimeException('Certificado A1 da SEFAZ não encontrado. Verifique SEFAZ_CERTIFICATE_PATH.');
+        if (! $certificate) {
+            throw new RuntimeException('Certificado A1 da SEFAZ não cadastrado. Envie o certificado em Configurações > Certificado.');
         }
 
         $config = json_encode([
@@ -66,9 +66,6 @@ class SefazClient
             'versao' => '4.00',
         ]);
 
-        return new Tools(
-            $config,
-            Certificate::readPfx(file_get_contents($path), (string) config('sefaz.certificate_password')),
-        );
+        return new Tools($config, $certificate->toCertificate());
     }
 }
