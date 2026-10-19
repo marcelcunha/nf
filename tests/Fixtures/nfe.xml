@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00"><NFe><infNFe Id="NFe35260112345678000195550010000001231000000019" versao="4.00">
+<ide><serie>1</serie><nNF>123</nNF><dhEmi>2026-01-10T10:00:00-03:00</dhEmi></ide>
+<emit><CNPJ>12345678000195</CNPJ><xNome>Fornecedor Teste Ltda</xNome><xFant>Teste</xFant><enderEmit><xLgr>Rua A</xLgr><nro>10</nro><xBairro>Centro</xBairro><xMun>Campinas</xMun><UF>SP</UF><CEP>13000000</CEP></enderEmit><IE>123456</IE></emit>
+<det nItem="1"><prod><cProd>ABC1</cProd><cEAN>SEM GTIN</cEAN><xProd>Parafuso</xProd><NCM>73181500</NCM><CFOP>5102</CFOP><uCom>UN</uCom><vUnCom>1.5000</vUnCom></prod></det>
+<det nItem="2"><prod><cProd>ABC2</cProd><cEAN>7891234567895</cEAN><xProd>Porca</xProd><NCM>73181600</NCM><CFOP>5102</CFOP><uCom>CX</uCom><vUnCom>20.0000</vUnCom></prod></det>
+<total><ICMSTot><vNF>21.50</vNF></ICMSTot></total>
+</infNFe></NFe></nfeProc>
