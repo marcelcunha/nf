@@ -2,7 +2,7 @@ import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Paginated } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface NfeImport {
@@ -12,6 +12,7 @@ interface NfeImport {
     series: number;
     issued_at: string;
     total: string;
+    items_count: number;
     supplier: { id: number; name: string };
 }
 
@@ -65,24 +66,34 @@ export default function NfeImportsIndex({
                                 <th className="p-3">Número/Série</th>
                                 <th className="p-3">Fornecedor</th>
                                 <th className="p-3">Chave de acesso</th>
+                                <th className="p-3 text-right">Produtos</th>
                                 <th className="p-3 text-right">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             {imports.data.map((item) => (
-                                <tr key={item.id} className="border-t">
+                                <tr
+                                    key={item.id}
+                                    className="hover:bg-muted/50 cursor-pointer border-t"
+                                    onClick={() => router.visit(`/nfe-imports/${item.id}`)}
+                                >
                                     <td className="p-3">{new Date(item.issued_at).toLocaleDateString('pt-BR')}</td>
                                     <td className="p-3">
-                                        {item.number}/{item.series}
+                                        <Link href={`/nfe-imports/${item.id}`} className="font-medium underline-offset-4 hover:underline">
+                                            {item.number}/{item.series}
+                                        </Link>
                                     </td>
                                     <td className="p-3">{item.supplier.name}</td>
                                     <td className="p-3 font-mono text-xs">{item.access_key}</td>
-                                    <td className="p-3 text-right">{Number(item.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                                    <td className="p-3 text-right">{item.items_count}</td>
+                                    <td className="p-3 text-right">
+                                        {Number(item.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                    </td>
                                 </tr>
                             ))}
                             {imports.data.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="text-muted-foreground p-6 text-center">
+                                    <td colSpan={6} className="text-muted-foreground p-6 text-center">
                                         Nenhuma NF-e importada ainda.
                                     </td>
                                 </tr>

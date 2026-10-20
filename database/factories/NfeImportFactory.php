@@ -23,6 +23,7 @@ class NfeImportFactory extends Factory
             'series' => 1,
             'issued_at' => now(),
             'total' => fake()->randomFloat(2, 10, 5000),
+            'items_count' => fake()->numberBetween(1, 20),
             'xml' => '<NFe/>',
         ];
     }

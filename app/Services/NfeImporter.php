@@ -45,6 +45,7 @@ class NfeImporter
                 'series' => (int) $infNFe->ide->serie,
                 'issued_at' => (string) ($infNFe->ide->dhEmi ?: $infNFe->ide->dEmi),
                 'total' => (string) $infNFe->total->ICMSTot->vNF,
+                'items_count' => count($infNFe->det),
                 'xml' => $xml,
             ]);
         });

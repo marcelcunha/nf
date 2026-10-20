@@ -24,6 +24,7 @@ class Product extends Model
         'cfop',
         'unit',
         'last_unit_cost',
+        'sale_price',
     ];
 
     /**
@@ -31,7 +32,10 @@ class Product extends Model
      */
     protected function casts(): array
     {
-        return ['last_unit_cost' => 'decimal:4'];
+        return [
+            'last_unit_cost' => 'decimal:4',
+            'sale_price' => 'decimal:4',
+        ];
     }
 
     /**

@@ -29,6 +29,7 @@ class NfeImporterTest extends TestCase
         $this->assertNull(Product::where('code', 'ABC1')->first()->ean);
         $this->assertSame('7891234567895', Product::where('code', 'ABC2')->first()->ean);
         $this->assertSame('35260112345678000195550010000001231000000019', $import->access_key);
+        $this->assertSame(2, $import->items_count);
     }
 
     public function test_reimporting_same_nfe_does_not_duplicate(): void

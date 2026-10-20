@@ -22,6 +22,7 @@ class NfeImport extends Model
         'series',
         'issued_at',
         'total',
+        'items_count',
         'xml',
     ];
 
