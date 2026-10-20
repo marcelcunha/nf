@@ -48,7 +48,7 @@ class SefazClient
         );
     }
 
-    private function tools(): Tools
+    public function tools(): Tools
     {
         $certificate = SefazCertificate::current();
 
@@ -56,12 +56,16 @@ class SefazClient
             throw new RuntimeException('Certificado A1 da SEFAZ não cadastrado. Envie o certificado em Configurações > Certificado.');
         }
 
+        if (! $certificate->cnpj) {
+            throw new RuntimeException('O certificado cadastrado não possui CNPJ. Envie um certificado A1 de pessoa jurídica.');
+        }
+
         $config = json_encode([
             'atualizacao' => now()->format('Y-m-d H:i:s'),
             'tpAmb' => config('sefaz.environment'),
-            'razaosocial' => config('sefaz.company_name'),
+            'razaosocial' => $certificate->subject,
             'siglaUF' => config('sefaz.state'),
-            'cnpj' => config('sefaz.cnpj'),
+            'cnpj' => $certificate->cnpj,
             'schemes' => 'PL_009_V4',
             'versao' => '4.00',
         ]);

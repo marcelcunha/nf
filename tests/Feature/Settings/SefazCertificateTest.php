@@ -116,4 +116,23 @@ class SefazCertificateTest extends TestCase
 
         app(SefazClient::class)->fetchSince('0');
     }
+
+    public function test_client_uses_company_data_from_the_certificate(): void
+    {
+        SefazCertificate::factory()->create();
+
+        $tools = app(SefazClient::class)->tools();
+
+        $this->assertSame('12345678000199', $tools->config->cnpj);
+        $this->assertSame('EMPRESA TESTE LTDA', $tools->config->razaosocial);
+    }
+
+    public function test_client_rejects_certificate_without_cnpj(): void
+    {
+        SefazCertificate::factory()->create(['cnpj' => null]);
+
+        $this->expectExceptionMessage('não possui CNPJ');
+
+        app(SefazClient::class)->tools();
+    }
 }
