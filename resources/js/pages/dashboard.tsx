@@ -81,8 +81,11 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex flex-col gap-4 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-muted-foreground text-sm">Resumo das compras importadas.</p>
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                    <div>
+                        <h1 className="text-2xl font-bold">Dashboard</h1>
+                        <p className="text-muted-foreground mt-1 text-sm">Resumo das compras importadas.</p>
+                    </div>
                     <div className="bg-muted flex gap-1 rounded-lg p-1" role="group" aria-label="Período">
                         {periods.map((item) => (
                             <button

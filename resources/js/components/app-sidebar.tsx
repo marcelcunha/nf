@@ -1,10 +1,10 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
+import { SidebarAppearanceToggle } from '@/components/sidebar-appearance-toggle';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, FileText, Folder, LayoutGrid } from 'lucide-react';
+import { FileText, LayoutGrid, SlidersHorizontal } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -18,18 +18,10 @@ const mainNavItems: NavItem[] = [
         url: '/nfe-imports',
         icon: FileText,
     },
-];
-
-const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        url: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        url: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
+        title: 'Configurações',
+        url: '/settings/profile',
+        icon: SlidersHorizontal,
     },
 ];
 
@@ -53,7 +45,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                <SidebarAppearanceToggle />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

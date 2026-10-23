@@ -21,11 +21,6 @@ const sidebarNavItems: NavItem[] = [
         url: '/settings/certificate',
         icon: null,
     },
-    {
-        title: 'Appearance',
-        url: '/settings/appearance',
-        icon: null,
-    },
 ];
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

@@ -67,11 +67,14 @@ export default function NfeImportsIndex({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="NF-es importadas" />
             <div className="flex flex-col gap-4 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-muted-foreground text-sm">
-                        Importação automática às {scheduleTimes.join(', ')}. Última execução:{' '}
-                        {lastRunAt ? new Date(lastRunAt).toLocaleString('pt-BR') : 'nunca'}.
-                    </p>
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                    <div>
+                        <h1 className="text-2xl font-bold">NF-es importadas</h1>
+                        <p className="text-muted-foreground mt-1 text-sm">
+                            Importação automática às {scheduleTimes.join(', ')}. Última execução:{' '}
+                            {lastRunAt ? new Date(lastRunAt).toLocaleString('pt-BR') : 'nunca'}.
+                        </p>
+                    </div>
                     <div className="flex items-center gap-3">
                         {queued && <span className="text-sm text-green-600">Importação enviada para a fila.</span>}
                         <Button onClick={importNow} disabled={processing}>
@@ -81,15 +84,14 @@ export default function NfeImportsIndex({
                 </div>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                     <div className="flex min-w-0 flex-1 flex-col gap-4">
-                        <div className="overflow-x-auto rounded-xl border">
+                        <div className="bg-card overflow-x-auto rounded-xl border">
                             <table className="w-full text-sm">
-                                <thead className="bg-muted/50 text-left">
+                                <thead className="bg-muted text-muted-foreground text-left">
                                     <tr>
                                         <th className="p-3">Emissão</th>
                                         <th className="p-3">Número/Série</th>
                                         <th className="p-3">Fornecedor</th>
-                                        <th className="p-3">Chave de acesso</th>
-                                        <th className="p-3 text-right">Produtos</th>
+                                        <th className="p-3 text-right">Itens</th>
                                         <th className="p-3 text-right">Total</th>
                                     </tr>
                                 </thead>
@@ -102,12 +104,19 @@ export default function NfeImportsIndex({
                                         >
                                             <td className="p-3">{new Date(item.issued_at).toLocaleDateString('pt-BR')}</td>
                                             <td className="p-3">
-                                                <Link href={`/nfe-imports/${item.id}`} className="font-medium underline-offset-4 hover:underline">
+                                                <Link
+                                                    href={`/nfe-imports/${item.id}`}
+                                                    className="text-primary font-semibold underline-offset-4 hover:underline dark:text-teal-300"
+                                                >
                                                     {item.number}/{item.series}
                                                 </Link>
                                             </td>
-                                            <td className="p-3">{item.supplier.name}</td>
-                                            <td className="p-3 font-mono text-xs">{item.access_key}</td>
+                                            <td className="p-3">
+                                                {item.supplier.name}
+                                                <div className="text-muted-foreground font-mono text-xs" title={item.access_key}>
+                                                    {item.access_key.slice(0, 8)}…{item.access_key.slice(-4)}
+                                                </div>
+                                            </td>
                                             <td className="p-3 text-right">{item.items_count}</td>
                                             <td className="p-3 text-right">
                                                 {Number(item.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
@@ -116,7 +125,7 @@ export default function NfeImportsIndex({
                                     ))}
                                     {imports.data.length === 0 && (
                                         <tr>
-                                            <td colSpan={6} className="text-muted-foreground p-6 text-center">
+                                            <td colSpan={5} className="text-muted-foreground p-6 text-center">
                                                 Nenhuma NF-e encontrada.
                                             </td>
                                         </tr>
@@ -127,12 +136,13 @@ export default function NfeImportsIndex({
                         <Pagination paginator={imports} />
                     </div>
                     <form
-                        className="bg-card order-first flex shrink-0 flex-col gap-3 rounded-xl border p-4 lg:order-last lg:w-96"
+                        className="bg-card order-first flex shrink-0 flex-col gap-3 rounded-xl border p-4 lg:order-last lg:w-80"
                         onSubmit={(event) => {
                             event.preventDefault();
                             applyFilters(form);
                         }}
                     >
+                        <h2 className="font-semibold">Filtros</h2>
                         <div className="grid gap-1">
                             <Label htmlFor="access_key">Chave de acesso</Label>
                             <Input
