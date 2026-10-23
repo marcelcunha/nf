@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NfeImportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -9,9 +10,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('nfe-imports', [NfeImportController::class, 'index'])->name('nfe-imports.index');
     Route::get('nfe-imports/{nfeImport}', [NfeImportController::class, 'show'])->name('nfe-imports.show');
