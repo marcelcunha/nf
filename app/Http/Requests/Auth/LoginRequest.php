@@ -50,6 +50,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => __('Seu acesso foi desativado.'),
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
