@@ -1,9 +1,9 @@
 import InputError from '@/components/input-error';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
 
 import HeadingSmall from '@/components/heading-small';
@@ -19,6 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Password() {
+    const { auth } = usePage<SharedData>().props;
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
@@ -54,6 +55,12 @@ export default function Password() {
 
             <SettingsLayout>
                 <div className="space-y-6">
+                    {auth.user.must_change_password && (
+                        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100">
+                            <p className="font-semibold">Troque a senha provisória para continuar.</p>
+                            <p className="mt-1">Use a senha recebida do administrador como senha atual e escolha uma nova senha.</p>
+                        </div>
+                    )}
                     <HeadingSmall title="Alterar senha" description="Use uma senha longa e aleatória para manter sua conta segura" />
 
                     <form onSubmit={updatePassword} className="space-y-6">
