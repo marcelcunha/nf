@@ -27,4 +27,14 @@ class NfeImportFactory extends Factory
             'xml' => '<NFe/>',
         ];
     }
+
+    /**
+     * Indicate that the price table was published to employees.
+     */
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'price_table_published_at' => now(),
+        ]);
+    }
 }

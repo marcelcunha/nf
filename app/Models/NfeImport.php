@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\NfeImportFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,7 @@ class NfeImport extends Model
         'issued_at',
         'total',
         'items_count',
+        'price_table_published_at',
         'xml',
     ];
 
@@ -33,6 +35,7 @@ class NfeImport extends Model
     {
         return [
             'issued_at' => 'datetime',
+            'price_table_published_at' => 'datetime',
             'total' => 'decimal:2',
         ];
     }
@@ -40,6 +43,11 @@ class NfeImport extends Model
     /**
      * @return BelongsTo<Person, $this>
      */
+    public function scopePublished(Builder $query): void
+    {
+        $query->whereNotNull('price_table_published_at');
+    }
+
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Person::class, 'supplier_id');

@@ -116,7 +116,17 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
                         Precificar NF-e {nfe.number}/{nfe.series}
                     </h1>
                     <div className="flex items-center gap-3">
-                        {saved && <span className="text-sm text-green-600">Preços salvos.</span>}
+                        {saved && <span className="text-sm text-green-600">Preços salvos e publicados.</span>}
+                        {nfe.price_table_published_at && (
+                            <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 dark:bg-green-950 dark:text-green-300">
+                                Publicada para funcionários
+                            </span>
+                        )}
+                        {nfe.price_table_published_at && (
+                            <Button variant="outline" onClick={() => router.delete(`/nfe-importadas/${nfe.id}/publicar`, { preserveScroll: true })}>
+                                Remover dos funcionários
+                            </Button>
+                        )}
                         <Button asChild variant="outline">
                             <Link href={`/nfe-importadas/${nfe.id}`}>Voltar</Link>
                         </Button>

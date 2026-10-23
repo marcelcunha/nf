@@ -16,6 +16,7 @@ interface NfeImport {
     issued_at: string;
     total: string;
     items_count: number;
+    price_table_published_at: string | null;
     supplier: { id: number; name: string };
 }
 
@@ -96,6 +97,7 @@ export default function NfeImportsIndex({
                                             <th className="p-3">Número/Série</th>
                                             <th className="p-3">Fornecedor</th>
                                             <th className="p-3 text-right">Itens</th>
+                                            <th className="p-3">Tabela de preço</th>
                                             <th className="p-3 text-right">Total</th>
                                         </tr>
                                     </thead>
@@ -122,6 +124,15 @@ export default function NfeImportsIndex({
                                                     </div>
                                                 </td>
                                                 <td className="p-3 text-right">{item.items_count}</td>
+                                                <td className="p-3">
+                                                    {item.price_table_published_at ? (
+                                                        <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800 dark:bg-green-950 dark:text-green-300">
+                                                            Publicada
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-muted-foreground">—</span>
+                                                    )}
+                                                </td>
                                                 <td className="p-3 text-right">
                                                     {Number(item.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                                 </td>
@@ -129,7 +140,7 @@ export default function NfeImportsIndex({
                                         ))}
                                         {imports.data.length === 0 && (
                                             <tr>
-                                                <td colSpan={5} className="text-muted-foreground p-6 text-center">
+                                                <td colSpan={6} className="text-muted-foreground p-6 text-center">
                                                     Nenhuma NF-e encontrada.
                                                 </td>
                                             </tr>

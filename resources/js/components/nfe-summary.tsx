@@ -9,7 +9,15 @@ export interface Taxes {
 }
 
 export interface NfeSummaryData {
-    nfe: { id: number; access_key: string; number: number; series: number; issued_at: string; total: string };
+    nfe: {
+        id: number;
+        access_key: string;
+        number: number;
+        series: number;
+        issued_at: string;
+        total: string;
+        price_table_published_at?: string | null;
+    };
     supplier: { id: number; name: string; document: string };
     details: {
         totals: { products: string; discount: string; freight: string; total: string };

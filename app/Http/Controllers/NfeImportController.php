@@ -40,7 +40,7 @@ class NfeImportController extends Controller
             'scheduleTimes' => config('sefaz.schedule_times'),
             'imports' => NfeImport::query()
                 ->with('supplier:id,name')
-                ->select(['id', 'access_key', 'supplier_id', 'number', 'series', 'issued_at', 'total', 'items_count'])
+                ->select(['id', 'access_key', 'supplier_id', 'number', 'series', 'issued_at', 'total', 'items_count', 'price_table_published_at'])
                 ->when($filters['access_key'] ?? null, fn ($query, $accessKey) => $query->where('access_key', 'like', "%{$accessKey}%"))
                 ->when($filters['number'] ?? null, fn ($query, $number) => $query->where('number', $number))
                 ->when($filters['from'] ?? null, fn ($query, $from) => $query->where('issued_at', '>=', Carbon::parse($from)->startOfDay()))
@@ -90,7 +90,16 @@ class NfeImportController extends Controller
                 ->update(['sale_price' => $price['sale_price']]);
         }
 
-        return back()->with('success', 'Preços salvos.');
+        $nfeImport->update(['price_table_published_at' => $nfeImport->price_table_published_at ?? now()]);
+
+        return back()->with('success', 'Preços salvos e publicados para os funcionários.');
+    }
+
+    public function unpublish(NfeImport $nfeImport): RedirectResponse
+    {
+        $nfeImport->update(['price_table_published_at' => null]);
+
+        return back()->with('success', 'Tabela de preço removida dos funcionários.');
     }
 
     /**
@@ -101,7 +110,7 @@ class NfeImportController extends Controller
         $nfeImport->load('supplier');
 
         return [
-            'nfe' => $nfeImport->only(['id', 'access_key', 'number', 'series', 'issued_at', 'total']),
+            'nfe' => $nfeImport->only(['id', 'access_key', 'number', 'series', 'issued_at', 'total', 'price_table_published_at']),
             'supplier' => $nfeImport->supplier,
             'details' => $reader->read($nfeImport->xml),
         ];
