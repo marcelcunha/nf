@@ -10,7 +10,9 @@ use App\Models\Product;
 use App\Models\SefazSyncState;
 use App\Services\NfeXmlReader;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 use NFePHP\DA\NFe\Danfe;
@@ -18,16 +20,34 @@ use Throwable;
 
 class NfeImportController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = $request->validate([
+            'access_key' => ['nullable', 'string', 'max:44'],
+            'number' => ['nullable', 'integer', 'min:0'],
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+        ]);
+
         return Inertia::render('nfe-imports/index', [
+            'filters' => [
+                'access_key' => $filters['access_key'] ?? '',
+                'number' => $filters['number'] ?? '',
+                'from' => $filters['from'] ?? '',
+                'to' => $filters['to'] ?? '',
+            ],
             'lastRunAt' => SefazSyncState::current()->last_run_at,
             'scheduleTimes' => config('sefaz.schedule_times'),
             'imports' => NfeImport::query()
                 ->with('supplier:id,name')
                 ->select(['id', 'access_key', 'supplier_id', 'number', 'series', 'issued_at', 'total', 'items_count'])
+                ->when($filters['access_key'] ?? null, fn ($query, $accessKey) => $query->where('access_key', 'like', "%{$accessKey}%"))
+                ->when($filters['number'] ?? null, fn ($query, $number) => $query->where('number', $number))
+                ->when($filters['from'] ?? null, fn ($query, $from) => $query->where('issued_at', '>=', Carbon::parse($from)->startOfDay()))
+                ->when($filters['to'] ?? null, fn ($query, $to) => $query->where('issued_at', '<=', Carbon::parse($to)->endOfDay()))
                 ->latest('issued_at')
-                ->paginate(20),
+                ->paginate(10)
+                ->withQueryString(),
         ]);
     }
 

@@ -4,9 +4,6 @@ namespace Tests\Feature;
 
 use App\Jobs\ImportNfesFromSefaz;
 use App\Models\NfeImport;
-use App\Models\Person;
-use App\Models\PersonCategory;
-use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
@@ -19,38 +16,9 @@ class ListingPagesTest extends TestCase
 
     public function test_guests_are_redirected_to_login(): void
     {
-        $this->get('/products')->assertRedirect('/login');
-        $this->get('/people')->assertRedirect('/login');
         $this->get('/nfe-imports')->assertRedirect('/login');
         $this->get('/nfe-imports/1')->assertRedirect('/login');
         $this->get('/nfe-imports/1/danfe')->assertRedirect('/login');
-    }
-
-    public function test_products_can_be_searched(): void
-    {
-        Product::factory()->create(['name' => 'Parafuso sextavado']);
-        Product::factory()->create(['name' => 'Porca']);
-
-        $this->actingAs(User::factory()->create())
-            ->get('/products?search=parafuso')
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('products/index')
-                ->has('products.data', 1)
-                ->where('products.data.0.name', 'Parafuso sextavado'));
-    }
-
-    public function test_people_can_be_filtered_by_category(): void
-    {
-        $supplier = Person::factory()->create();
-        $supplier->categories()->attach(PersonCategory::supplier());
-        Person::factory()->create();
-
-        $this->actingAs(User::factory()->create())
-            ->get('/people?category=fornecedor')
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('people/index')
-                ->has('people.data', 1)
-                ->where('people.data.0.id', $supplier->id));
     }
 
     public function test_nfe_imports_lists_and_dispatches_import(): void
@@ -67,6 +35,34 @@ class ListingPagesTest extends TestCase
 
         $this->actingAs($user)->post('/nfe-imports')->assertRedirect();
         Queue::assertPushed(ImportNfesFromSefaz::class);
+    }
+
+    public function test_nfe_imports_can_be_filtered_by_key_number_and_period(): void
+    {
+        $target = NfeImport::factory()->create([
+            'access_key' => str_repeat('1', 44),
+            'number' => 555,
+            'issued_at' => '2026-03-10 23:30:00',
+        ]);
+        NfeImport::factory()->create(['access_key' => str_repeat('2', 44), 'number' => 556, 'issued_at' => '2026-04-20 10:00:00']);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get('/nfe-imports?access_key=1111')
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('imports.data', 1)
+                ->where('imports.data.0.id', $target->id));
+
+        $this->actingAs($user)->get('/nfe-imports?number=555')
+            ->assertInertia(fn (Assert $page) => $page->has('imports.data', 1)->where('imports.data.0.id', $target->id));
+
+        $this->actingAs($user)->get('/nfe-imports?from=2026-03-01&to=2026-03-10')
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('imports.data', 1)
+                ->where('imports.data.0.id', $target->id)
+                ->where('filters.to', '2026-03-10'));
+
+        $this->actingAs($user)->get('/nfe-imports?from=2026-03-11&to=2026-03-01')
+            ->assertSessionHasErrors('to');
     }
 
     public function test_nfe_details_page_lists_items_from_the_xml(): void

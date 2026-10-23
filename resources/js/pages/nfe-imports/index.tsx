@@ -1,5 +1,7 @@
 import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Paginated } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -18,17 +20,36 @@ interface NfeImport {
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'NF-es importadas', href: '/nfe-imports' }];
 
+interface Filters {
+    access_key: string;
+    number: string;
+    from: string;
+    to: string;
+}
+
 export default function NfeImportsIndex({
     imports,
+    filters,
     lastRunAt,
     scheduleTimes,
 }: {
     imports: Paginated<NfeImport>;
+    filters: Filters;
     lastRunAt: string | null;
     scheduleTimes: string[];
 }) {
     const [processing, setProcessing] = useState(false);
     const [queued, setQueued] = useState(false);
+    const [form, setForm] = useState<Filters>(filters);
+
+    const applyFilters = (values: Filters) =>
+        router.get('/nfe-imports', Object.fromEntries(Object.entries(values).filter(([, value]) => value !== '')), { preserveState: true });
+
+    const clearFilters = () => {
+        const empty = { access_key: '', number: '', from: '', to: '' };
+        setForm(empty);
+        applyFilters(empty);
+    };
 
     const importNow = () =>
         router.post(
@@ -58,50 +79,98 @@ export default function NfeImportsIndex({
                         </Button>
                     </div>
                 </div>
-                <div className="overflow-x-auto rounded-xl border">
-                    <table className="w-full text-sm">
-                        <thead className="bg-muted/50 text-left">
-                            <tr>
-                                <th className="p-3">Emissão</th>
-                                <th className="p-3">Número/Série</th>
-                                <th className="p-3">Fornecedor</th>
-                                <th className="p-3">Chave de acesso</th>
-                                <th className="p-3 text-right">Produtos</th>
-                                <th className="p-3 text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {imports.data.map((item) => (
-                                <tr
-                                    key={item.id}
-                                    className="hover:bg-muted/50 cursor-pointer border-t"
-                                    onClick={() => router.visit(`/nfe-imports/${item.id}`)}
-                                >
-                                    <td className="p-3">{new Date(item.issued_at).toLocaleDateString('pt-BR')}</td>
-                                    <td className="p-3">
-                                        <Link href={`/nfe-imports/${item.id}`} className="font-medium underline-offset-4 hover:underline">
-                                            {item.number}/{item.series}
-                                        </Link>
-                                    </td>
-                                    <td className="p-3">{item.supplier.name}</td>
-                                    <td className="p-3 font-mono text-xs">{item.access_key}</td>
-                                    <td className="p-3 text-right">{item.items_count}</td>
-                                    <td className="p-3 text-right">
-                                        {Number(item.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                                    </td>
-                                </tr>
-                            ))}
-                            {imports.data.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="text-muted-foreground p-6 text-center">
-                                        Nenhuma NF-e importada ainda.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+                    <div className="flex min-w-0 flex-1 flex-col gap-4">
+                        <div className="overflow-x-auto rounded-xl border">
+                            <table className="w-full text-sm">
+                                <thead className="bg-muted/50 text-left">
+                                    <tr>
+                                        <th className="p-3">Emissão</th>
+                                        <th className="p-3">Número/Série</th>
+                                        <th className="p-3">Fornecedor</th>
+                                        <th className="p-3">Chave de acesso</th>
+                                        <th className="p-3 text-right">Produtos</th>
+                                        <th className="p-3 text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {imports.data.map((item) => (
+                                        <tr
+                                            key={item.id}
+                                            className="hover:bg-muted/50 cursor-pointer border-t"
+                                            onClick={() => router.visit(`/nfe-imports/${item.id}`)}
+                                        >
+                                            <td className="p-3">{new Date(item.issued_at).toLocaleDateString('pt-BR')}</td>
+                                            <td className="p-3">
+                                                <Link href={`/nfe-imports/${item.id}`} className="font-medium underline-offset-4 hover:underline">
+                                                    {item.number}/{item.series}
+                                                </Link>
+                                            </td>
+                                            <td className="p-3">{item.supplier.name}</td>
+                                            <td className="p-3 font-mono text-xs">{item.access_key}</td>
+                                            <td className="p-3 text-right">{item.items_count}</td>
+                                            <td className="p-3 text-right">
+                                                {Number(item.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {imports.data.length === 0 && (
+                                        <tr>
+                                            <td colSpan={6} className="text-muted-foreground p-6 text-center">
+                                                Nenhuma NF-e encontrada.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        <Pagination paginator={imports} />
+                    </div>
+                    <form
+                        className="bg-card order-first flex shrink-0 flex-col gap-3 rounded-xl border p-4 lg:order-last lg:w-96"
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            applyFilters(form);
+                        }}
+                    >
+                        <div className="grid gap-1">
+                            <Label htmlFor="access_key">Chave de acesso</Label>
+                            <Input
+                                id="access_key"
+                                value={form.access_key}
+                                onChange={(event) => setForm({ ...form, access_key: event.target.value })}
+                                maxLength={44}
+                                className="font-mono"
+                            />
+                        </div>
+                        <div className="grid gap-1">
+                            <Label htmlFor="number">Número</Label>
+                            <Input
+                                id="number"
+                                type="number"
+                                min={0}
+                                value={form.number}
+                                onChange={(event) => setForm({ ...form, number: event.target.value })}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="grid gap-1">
+                                <Label htmlFor="from">Emissão de</Label>
+                                <Input id="from" type="date" value={form.from} onChange={(event) => setForm({ ...form, from: event.target.value })} />
+                            </div>
+                            <div className="grid gap-1">
+                                <Label htmlFor="to">até</Label>
+                                <Input id="to" type="date" value={form.to} onChange={(event) => setForm({ ...form, to: event.target.value })} />
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button type="submit">Filtrar</Button>
+                            <Button type="button" variant="outline" onClick={clearFilters}>
+                                Limpar
+                            </Button>
+                        </div>
+                    </form>
                 </div>
-                <Pagination paginator={imports} />
             </div>
         </AppLayout>
     );
