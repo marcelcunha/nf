@@ -4,7 +4,7 @@ import { SidebarAppearanceToggle } from '@/components/sidebar-appearance-toggle'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { FileText, LayoutGrid, SlidersHorizontal } from 'lucide-react';
+import { FileText, LayoutGrid, ShieldCheck, SlidersHorizontal } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -19,6 +19,11 @@ const mainNavItems: NavItem[] = [
         icon: FileText,
     },
     {
+        title: 'Certificado digital',
+        url: '/settings/certificate',
+        icon: ShieldCheck,
+    },
+    {
         title: 'Configurações',
         url: '/settings/profile',
         icon: SlidersHorizontal,
@@ -27,7 +32,7 @@ const mainNavItems: NavItem[] = [
 
 export function AppSidebar() {
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="offcanvas" variant="sidebar">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

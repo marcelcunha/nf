@@ -43,7 +43,7 @@ export default function NfeImportsShow({ nfe, supplier, details }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`NF-e ${nfe.number}/${nfe.series}`} />
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-5 p-4 md:px-8 md:py-7">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <h1 className="text-xl font-semibold">
                         NF-e {nfe.number}/{nfe.series}

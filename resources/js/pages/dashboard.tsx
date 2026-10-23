@@ -62,7 +62,7 @@ function Change({ value, previous }: { value: number | null; previous: string })
 
 function Panel({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
     return (
-        <section className="bg-card rounded-xl border p-5">
+        <section className="bg-card min-w-0 rounded-xl border p-5">
             <div className="mb-4 flex items-center justify-between gap-2">
                 <h2 className="font-semibold">{title}</h2>
                 {action}
@@ -80,7 +80,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-5 p-4 md:px-8 md:py-7">
                 <div className="flex flex-wrap items-end justify-between gap-2">
                     <div>
                         <h1 className="text-2xl font-bold">Dashboard</h1>
@@ -101,7 +101,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                     </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <div className="bg-card rounded-xl border p-5">
                         <p className="text-muted-foreground text-sm">NF-es no período</p>
                         <p className="mt-1 text-2xl font-bold">{kpis.count.value}</p>
@@ -124,7 +124,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                     </div>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <div className="lg:col-span-2">
                         <Panel title="Compras por mês">
                             <div className="flex h-48 items-end gap-2 border-b">
@@ -192,7 +192,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                     </Panel>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-5">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
                     <div className="lg:col-span-2">
                         <Panel title="Maiores fornecedores">
                             {suppliers.length === 0 ? (
@@ -226,33 +226,35 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                                 </Link>
                             }
                         >
-                            <table className="w-full text-sm">
-                                <tbody>
-                                    {recent.map((item) => (
-                                        <tr
-                                            key={item.id}
-                                            className="hover:bg-muted/50 cursor-pointer border-t"
-                                            onClick={() => router.visit(`/nfe-imports/${item.id}`)}
-                                        >
-                                            <td className="text-muted-foreground py-2.5 pr-3">
-                                                {new Date(item.issued_at).toLocaleDateString('pt-BR')}
-                                            </td>
-                                            <td className="py-2.5 pr-3 font-medium">
-                                                <Link href={`/nfe-imports/${item.id}`} className="underline-offset-4 hover:underline">
-                                                    {item.number}/{item.series}
-                                                </Link>
-                                            </td>
-                                            <td className="py-2.5 pr-3">{item.supplier}</td>
-                                            <td className="py-2.5 text-right font-semibold">{currency(item.total)}</td>
-                                        </tr>
-                                    ))}
-                                    {recent.length === 0 && (
-                                        <tr>
-                                            <td className="text-muted-foreground py-4 text-center">Nenhuma NF-e importada ainda.</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <tbody>
+                                        {recent.map((item) => (
+                                            <tr
+                                                key={item.id}
+                                                className="hover:bg-muted/50 cursor-pointer border-t"
+                                                onClick={() => router.visit(`/nfe-imports/${item.id}`)}
+                                            >
+                                                <td className="text-muted-foreground py-2.5 pr-3">
+                                                    {new Date(item.issued_at).toLocaleDateString('pt-BR')}
+                                                </td>
+                                                <td className="py-2.5 pr-3 font-medium">
+                                                    <Link href={`/nfe-imports/${item.id}`} className="underline-offset-4 hover:underline">
+                                                        {item.number}/{item.series}
+                                                    </Link>
+                                                </td>
+                                                <td className="py-2.5 pr-3">{item.supplier}</td>
+                                                <td className="py-2.5 text-right font-semibold">{currency(item.total)}</td>
+                                            </tr>
+                                        ))}
+                                        {recent.length === 0 && (
+                                            <tr>
+                                                <td className="text-muted-foreground py-4 text-center">Nenhuma NF-e importada ainda.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </Panel>
                     </div>
                 </div>
