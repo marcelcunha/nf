@@ -1,11 +1,11 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "marcelcunha/nf-import",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Importação de NF-es da SEFAZ com precificação de produtos.",
     "keywords": [
-        "laravel",
-        "framework"
+        "nf-e",
+        "sefaz"
     ],
     "license": "MIT",
     "require": {

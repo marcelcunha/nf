@@ -14,11 +14,11 @@ export default function AuthSimpleLayout({ children, title, description }: AuthL
             <div className="w-full max-w-sm">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col items-center gap-4">
-                        <Link href={route('home')} className="flex flex-col items-center gap-2 font-medium">
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
+                        <Link href={route('dashboard')} className="flex flex-col items-center gap-2 font-medium">
+                            <div className="bg-primary text-primary-foreground mb-1 flex size-12 items-center justify-center rounded-xl">
+                                <AppLogoIcon className="size-10" />
                             </div>
-                            <span className="sr-only">{title}</span>
+                            <span className="sr-only">NF-e Import</span>
                         </Link>
 
                         <div className="space-y-2 text-center">
