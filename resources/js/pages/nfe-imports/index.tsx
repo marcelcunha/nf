@@ -19,7 +19,7 @@ interface NfeImport {
     supplier: { id: number; name: string };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'NF-es importadas', href: '/nfe-imports' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'NF-es importadas', href: '/nfe-importadas' }];
 
 interface Filters {
     access_key: string;
@@ -46,7 +46,7 @@ export default function NfeImportsIndex({
     const hasActiveFilters = Object.values(filters).some((value) => value !== '');
 
     const applyFilters = (values: Filters) =>
-        router.get('/nfe-imports', Object.fromEntries(Object.entries(values).filter(([, value]) => value !== '')), { preserveState: true });
+        router.get('/nfe-importadas', Object.fromEntries(Object.entries(values).filter(([, value]) => value !== '')), { preserveState: true });
 
     const clearFilters = () => {
         const empty = { access_key: '', number: '', from: '', to: '' };
@@ -56,7 +56,7 @@ export default function NfeImportsIndex({
 
     const importNow = () =>
         router.post(
-            '/nfe-imports',
+            '/nfe-importadas',
             {},
             {
                 preserveScroll: true,
@@ -104,12 +104,12 @@ export default function NfeImportsIndex({
                                             <tr
                                                 key={item.id}
                                                 className="hover:bg-muted/50 cursor-pointer border-t"
-                                                onClick={() => router.visit(`/nfe-imports/${item.id}`)}
+                                                onClick={() => router.visit(`/nfe-importadas/${item.id}`)}
                                             >
                                                 <td className="p-3">{new Date(item.issued_at).toLocaleDateString('pt-BR')}</td>
                                                 <td className="p-3">
                                                     <Link
-                                                        href={`/nfe-imports/${item.id}`}
+                                                        href={`/nfe-importadas/${item.id}`}
                                                         className="text-primary font-semibold underline-offset-4 hover:underline dark:text-teal-300"
                                                     >
                                                         {item.number}/{item.series}

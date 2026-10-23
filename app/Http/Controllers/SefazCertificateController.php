@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Settings;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\SefazCertificateUpdateRequest;
+use App\Http\Requests\SefazCertificateUpdateRequest;
 use App\Models\SefazCertificate;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -15,7 +14,7 @@ class SefazCertificateController extends Controller
     {
         $certificate = SefazCertificate::current();
 
-        return Inertia::render('settings/certificate', [
+        return Inertia::render('certificate', [
             'certificate' => $certificate ? [
                 'subject' => $certificate->subject,
                 'cnpj' => $certificate->cnpj,

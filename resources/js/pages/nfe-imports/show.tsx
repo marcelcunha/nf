@@ -33,8 +33,8 @@ interface Props {
 
 export default function NfeImportsShow({ nfe, supplier, details }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'NF-es importadas', href: '/nfe-imports' },
-        { title: `NF-e ${nfe.number}/${nfe.series}`, href: `/nfe-imports/${nfe.id}` },
+        { title: 'NF-es importadas', href: '/nfe-importadas' },
+        { title: `NF-e ${nfe.number}/${nfe.series}`, href: `/nfe-importadas/${nfe.id}` },
     ];
 
     const { taxes } = details;
@@ -50,10 +50,10 @@ export default function NfeImportsShow({ nfe, supplier, details }: Props) {
                     </h1>
                     <div className="flex gap-2">
                         <Button asChild variant="outline">
-                            <Link href={`/nfe-imports/${nfe.id}/pricing`}>Precificar</Link>
+                            <Link href={`/nfe-importadas/${nfe.id}/precificar`}>Precificar</Link>
                         </Button>
                         <Button asChild>
-                            <a href={`/nfe-imports/${nfe.id}/danfe`} target="_blank" rel="noreferrer">
+                            <a href={`/nfe-importadas/${nfe.id}/danfe`} target="_blank" rel="noreferrer">
                                 Gerar DANFE
                             </a>
                         </Button>

@@ -27,9 +27,9 @@ const round = (value: number) => (Math.round(value * 10000) / 10000).toString();
 
 export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'NF-es importadas', href: '/nfe-imports' },
-        { title: `NF-e ${nfe.number}/${nfe.series}`, href: `/nfe-imports/${nfe.id}` },
-        { title: 'Precificar', href: `/nfe-imports/${nfe.id}/pricing` },
+        { title: 'NF-es importadas', href: '/nfe-importadas' },
+        { title: `NF-e ${nfe.number}/${nfe.series}`, href: `/nfe-importadas/${nfe.id}` },
+        { title: 'Precificar', href: `/nfe-importadas/${nfe.id}/precificar` },
     ];
 
     const [prices, setPrices] = useState<Record<number, string>>(() =>
@@ -90,7 +90,7 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
 
     const save = () =>
         router.put(
-            `/nfe-imports/${nfe.id}/pricing`,
+            `/nfe-importadas/${nfe.id}/precificar`,
             {
                 prices: details.items
                     .filter((item) => item.product_id !== null)
@@ -118,7 +118,7 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
                     <div className="flex items-center gap-3">
                         {saved && <span className="text-sm text-green-600">Preços salvos.</span>}
                         <Button asChild variant="outline">
-                            <Link href={`/nfe-imports/${nfe.id}`}>Voltar</Link>
+                            <Link href={`/nfe-importadas/${nfe.id}`}>Voltar</Link>
                         </Button>
                         <Button onClick={save} disabled={processing}>
                             Salvar preços

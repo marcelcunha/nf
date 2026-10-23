@@ -1,13 +1,11 @@
 import InputError from '@/components/input-error';
 import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
 import { type BreadcrumbItem } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Head, useForm } from '@inertiajs/react';
 import { Eye, EyeOff } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 
-import HeadingSmall from '@/components/heading-small';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +14,7 @@ import { Label } from '@/components/ui/label';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Certificado digital',
-        href: '/settings/certificate',
+        href: '/certificado',
     },
 ];
 
@@ -54,13 +52,15 @@ export default function Certificate({ certificate }: { certificate: CertificateI
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Certificado digital" />
 
-            <SettingsLayout>
-                <div className="space-y-6">
-                    <HeadingSmall
-                        title="Certificado digital A1"
-                        description="Usado para consultar as NF-es na SEFAZ. O arquivo e a senha são armazenados criptografados."
-                    />
+            <div className="flex flex-col gap-5 p-4 md:px-8 md:py-7">
+                <div>
+                    <h1 className="text-2xl font-bold">Certificado digital A1</h1>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                        Usado para consultar as NF-es na SEFAZ. O arquivo e a senha são armazenados criptografados.
+                    </p>
+                </div>
 
+                <div className="bg-card w-full max-w-2xl space-y-6 rounded-xl border p-5">
                     {certificate && (
                         <Alert variant={certificate.is_expired || certificate.days_until_expiry <= 30 ? 'destructive' : 'default'}>
                             <AlertDescription>
@@ -133,7 +133,7 @@ export default function Certificate({ certificate }: { certificate: CertificateI
                         </div>
                     </form>
                 </div>
-            </SettingsLayout>
+            </div>
         </AppLayout>
     );
 }

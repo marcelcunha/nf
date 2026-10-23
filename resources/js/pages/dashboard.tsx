@@ -28,7 +28,7 @@ interface Props {
     certificate: { valid_to: string; days_left: number; expired: boolean } | null;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/' }];
 
 const periods = [
     { value: 'month', label: 'Este mês', previous: 'o mês anterior' },
@@ -92,7 +92,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                                 key={item.value}
                                 type="button"
                                 aria-pressed={item.value === period}
-                                onClick={() => router.get('/dashboard', { period: item.value }, { preserveScroll: true, preserveState: true })}
+                                onClick={() => router.get('/', { period: item.value }, { preserveScroll: true, preserveState: true })}
                                 className={`rounded-md px-3 py-1.5 text-sm ${item.value === period ? 'bg-background font-semibold shadow-xs' : 'text-muted-foreground'}`}
                             >
                                 {item.label}
@@ -169,7 +169,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                             </dl>
                             {certificate === null ? (
                                 <Link
-                                    href="/settings/certificate"
+                                    href="/certificado"
                                     className="rounded-lg bg-amber-100 p-3 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
                                 >
                                     <b>Nenhum certificado A1 cadastrado.</b> Cadastre para importar notas.
@@ -177,7 +177,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                             ) : (
                                 (certificate.expired || certificate.days_left <= 60) && (
                                     <Link
-                                        href="/settings/certificate"
+                                        href="/certificado"
                                         className="rounded-lg bg-amber-100 p-3 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
                                     >
                                         <b>
@@ -221,7 +221,7 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                         <Panel
                             title="Últimas NF-es"
                             action={
-                                <Link href="/nfe-imports" className="text-sm font-medium underline-offset-4 hover:underline">
+                                <Link href="/nfe-importadas" className="text-sm font-medium underline-offset-4 hover:underline">
                                     Ver todas
                                 </Link>
                             }
@@ -233,13 +233,13 @@ export default function Dashboard({ period, kpis, months, suppliers, recent, syn
                                             <tr
                                                 key={item.id}
                                                 className="hover:bg-muted/50 cursor-pointer border-t"
-                                                onClick={() => router.visit(`/nfe-imports/${item.id}`)}
+                                                onClick={() => router.visit(`/nfe-importadas/${item.id}`)}
                                             >
                                                 <td className="text-muted-foreground py-2.5 pr-3">
                                                     {new Date(item.issued_at).toLocaleDateString('pt-BR')}
                                                 </td>
                                                 <td className="py-2.5 pr-3 font-medium">
-                                                    <Link href={`/nfe-imports/${item.id}`} className="underline-offset-4 hover:underline">
+                                                    <Link href={`/nfe-importadas/${item.id}`} className="underline-offset-4 hover:underline">
                                                         {item.number}/{item.series}
                                                     </Link>
                                                 </td>

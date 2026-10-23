@@ -4,29 +4,24 @@ import { SidebarAppearanceToggle } from '@/components/sidebar-appearance-toggle'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { FileText, LayoutGrid, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { FileText, LayoutGrid, ShieldCheck } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        url: '/dashboard',
+        url: '/',
         icon: LayoutGrid,
     },
     {
         title: 'NF-es importadas',
-        url: '/nfe-imports',
+        url: '/nfe-importadas',
         icon: FileText,
     },
     {
         title: 'Certificado digital',
-        url: '/settings/certificate',
+        url: '/certificado',
         icon: ShieldCheck,
-    },
-    {
-        title: 'Configurações',
-        url: '/settings/profile',
-        icon: SlidersHorizontal,
     },
 ];
 
@@ -37,7 +32,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            <Link href="/" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

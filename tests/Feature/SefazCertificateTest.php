@@ -11,8 +11,8 @@ use Illuminate\Testing\TestResponse;
 function uploadCertificate(string $pfx, string $password): TestResponse
 {
     return test()->actingAs(User::factory()->create())
-        ->from('/settings/certificate')
-        ->post('/settings/certificate', [
+        ->from('/certificado')
+        ->post('/certificado', [
             'certificate' => UploadedFile::fake()->createWithContent('cert.pfx', $pfx),
             'password' => $password,
         ]);
@@ -78,10 +78,10 @@ test('expired certificate is rejected', function () {
 test('settings page never exposes pfx or password', function () {
     SefazCertificate::factory()->create();
 
-    $response = $this->actingAs(User::factory()->create())->get('/settings/certificate');
+    $response = $this->actingAs(User::factory()->create())->get('/certificado');
 
     $response->assertOk()->assertInertia(fn ($page) => $page
-        ->component('settings/certificate')
+        ->component('certificate')
         ->where('certificate.subject', 'EMPRESA TESTE LTDA')
         ->missing('certificate.pfx')
         ->missing('certificate.password'));
@@ -89,7 +89,7 @@ test('settings page never exposes pfx or password', function () {
 });
 
 test('guests cannot upload', function () {
-    $this->post('/settings/certificate')->assertRedirect('/login');
+    $this->post('/certificado')->assertRedirect('/login');
 });
 
 test('client requires a registered certificate', function () {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Settings;
+namespace App\Http\Requests;
 
 use App\Services\Sefaz\InvalidPfxException;
 use App\Services\Sefaz\PfxNormalizer;
