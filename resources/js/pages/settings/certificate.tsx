@@ -107,7 +107,7 @@ export default function Certificate({ certificate }: { certificate: CertificateI
                                     type="button"
                                     variant="ghost"
                                     size="icon"
-                                    className="absolute inset-y-0 right-0 text-muted-foreground"
+                                    className="text-muted-foreground absolute inset-y-0 right-0"
                                     onClick={() => setShowPassword((visible) => !visible)}
                                     aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                                 >
