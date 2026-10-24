@@ -6,6 +6,7 @@ use App\Models\SefazSyncState;
 use App\Services\Sefaz\DistributionBatch;
 use App\Services\Sefaz\SefazClient;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Support\Facades\Queue;
 
 test('job imports documents and advances nsu', function () {
@@ -27,7 +28,7 @@ test('job imports documents and advances nsu', function () {
 test('job fails on sefaz error without advancing nsu', function () {
     $this->mock(SefazClient::class)
         ->shouldReceive('fetchSince')->once()
-        ->andReturn(new DistributionBatch(656, 'Consumo Indevido', '0', '0', []));
+        ->andReturn(new DistributionBatch(999, 'Erro', '0', '0', []));
 
     $this->expectException(RuntimeException::class);
 
@@ -36,6 +37,22 @@ test('job fails on sefaz error without advancing nsu', function () {
     } finally {
         expect(SefazSyncState::current()->last_nsu)->toBe('0');
     }
+});
+
+test('job fails without retries on sefaz status 656', function () {
+    $this->mock(SefazClient::class)
+        ->shouldReceive('fetchSince')->once()
+        ->andReturn(new DistributionBatch(656, 'Consumo Indevido', '0', '0', []));
+
+    $queueJob = Mockery::mock(Job::class);
+    $queueJob->shouldReceive('fail')->once()->with(Mockery::type(RuntimeException::class));
+
+    $job = new ImportNfesFromSefaz;
+    $job->setJob($queueJob);
+
+    app()->call([$job, 'handle']);
+
+    expect(SefazSyncState::current()->last_nsu)->toBe('0');
 });
 
 test('command dispatches job', function () {

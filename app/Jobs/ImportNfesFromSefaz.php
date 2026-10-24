@@ -14,6 +14,11 @@ class ImportNfesFromSefaz implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Consumo indevido: repetir a consulta só prolonga o bloqueio imposto pela SEFAZ.
+     */
+    private const CONSUMPTION_ABUSE_STATUS = 656;
+
     public int $tries = 3;
 
     public int $uniqueFor = 3600;
@@ -34,7 +39,15 @@ class ImportNfesFromSefaz implements ShouldBeUnique, ShouldQueue
             $batch = $client->fetchSince($state->last_nsu);
 
             if (! $batch->isSuccessful()) {
-                throw new RuntimeException("SEFAZ retornou {$batch->statusCode}: {$batch->statusMessage}");
+                $exception = new RuntimeException("SEFAZ retornou {$batch->statusCode}: {$batch->statusMessage}");
+
+                if ($batch->statusCode === self::CONSUMPTION_ABUSE_STATUS) {
+                    $this->fail($exception);
+
+                    return;
+                }
+
+                throw $exception;
             }
 
             foreach ($batch->documents as $document) {
