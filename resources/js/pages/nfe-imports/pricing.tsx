@@ -18,6 +18,7 @@ interface Item {
     taxes: Taxes;
     product_id: number | null;
     sale_price: string | null;
+    package_quantity: number;
 }
 
 type Props = NfeSummaryData & { details: NfeSummaryData['details'] & { items: Item[] } };
@@ -35,13 +36,18 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
     const [prices, setPrices] = useState<Record<number, string>>(() =>
         Object.fromEntries(details.items.map((item) => [item.number, item.sale_price ? round(Number(item.sale_price)) : ''])),
     );
+    const [quantities, setQuantities] = useState<Record<number, string>>(() =>
+        Object.fromEntries(details.items.map((item) => [item.number, String(item.package_quantity)])),
+    );
     const [selected, setSelected] = useState<Set<number>>(new Set());
     const [bulkMargin, setBulkMargin] = useState('');
     const [processing, setProcessing] = useState(false);
     const [saved, setSaved] = useState(false);
 
+    const pieceCost = (item: Item): number => Number(item.unit_cost_with_taxes) / Math.max(1, Number(quantities[item.number]) || 1);
+
     const margin = (item: Item): string => {
-        const cost = Number(item.unit_cost_with_taxes);
+        const cost = pieceCost(item);
         const price = prices[item.number];
         if (!item.unit_cost_with_taxes || cost <= 0 || price === '') {
             return '';
@@ -50,7 +56,7 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
     };
 
     const setMargin = (item: Item, value: string) => {
-        const cost = Number(item.unit_cost_with_taxes);
+        const cost = pieceCost(item);
         setPrices((current) => ({
             ...current,
             [item.number]: value === '' || !item.unit_cost_with_taxes ? '' : round(cost * (1 + Number(value) / 100)),
@@ -82,7 +88,7 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
             selectable
                 .filter((item) => selected.has(item.number))
                 .forEach((item) => {
-                    next[item.number] = round(Number(item.unit_cost_with_taxes) * (1 + Number(bulkMargin) / 100));
+                    next[item.number] = round(pieceCost(item) * (1 + Number(bulkMargin) / 100));
                 });
             return next;
         });
@@ -94,7 +100,11 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
             {
                 prices: details.items
                     .filter((item) => item.product_id !== null)
-                    .map((item) => ({ product_id: item.product_id, sale_price: prices[item.number] === '' ? null : prices[item.number] })),
+                    .map((item) => ({
+                        product_id: item.product_id,
+                        sale_price: prices[item.number] === '' ? null : prices[item.number],
+                        package_quantity: Math.max(1, Math.floor(Number(quantities[item.number])) || 1),
+                    })),
             },
             {
                 preserveScroll: true,
@@ -174,7 +184,8 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
                                 <th className="p-3 text-right" title="IPI + ICMS ST + Imposto de importação">
                                     Impostos
                                 </th>
-                                <th className="p-3 text-right">Custo unit. c/ impostos</th>
+                                <th className="p-3 text-right">Qtd. na embalagem</th>
+                                <th className="p-3 text-right">Custo por peça c/ impostos</th>
                                 <th className="p-3 text-right">Margem %</th>
                                 <th className="p-3 text-right">Preço de venda</th>
                             </tr>
@@ -198,8 +209,20 @@ export default function NfeImportsPricing({ nfe, supplier, details }: Props) {
                                     </td>
                                     <td className="p-3 text-right">{money(item.total)}</td>
                                     <td className="p-3 text-right">{money(String(addedTaxes(item.taxes)))}</td>
+                                    <td className="p-3 text-right">
+                                        <Input
+                                            type="number"
+                                            step="1"
+                                            min="1"
+                                            aria-label={`Quantidade na embalagem do item ${item.number}`}
+                                            className="ml-auto w-24 text-right"
+                                            value={quantities[item.number]}
+                                            disabled={item.product_id === null}
+                                            onChange={(event) => setQuantities((current) => ({ ...current, [item.number]: event.target.value }))}
+                                        />
+                                    </td>
                                     <td className="p-3 text-right font-medium">
-                                        {item.unit_cost_with_taxes !== null ? money(item.unit_cost_with_taxes) : '—'}
+                                        {item.unit_cost_with_taxes !== null ? money(String(pieceCost(item))) : '—'}
                                     </td>
                                     <td className="p-3 text-right">
                                         <Input

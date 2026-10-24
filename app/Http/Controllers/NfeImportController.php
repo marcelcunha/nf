@@ -70,12 +70,13 @@ class NfeImportController extends Controller
         $products = Product::query()
             ->where('supplier_id', $nfeImport->supplier_id)
             ->whereIn('code', array_column($payload['details']['items'], 'code'))
-            ->get(['id', 'code', 'sale_price'])
+            ->get(['id', 'code', 'sale_price', 'package_quantity'])
             ->keyBy('code');
 
         $payload['details']['items'] = array_map(fn (array $item): array => $item + [
             'product_id' => $products[$item['code']]->id ?? null,
             'sale_price' => $products[$item['code']]->sale_price ?? null,
+            'package_quantity' => $products[$item['code']]->package_quantity ?? 1,
         ], $payload['details']['items']);
 
         return Inertia::render('nfe-imports/pricing', $payload);
@@ -87,7 +88,7 @@ class NfeImportController extends Controller
             Product::query()
                 ->where('supplier_id', $nfeImport->supplier_id)
                 ->whereKey($price['product_id'])
-                ->update(['sale_price' => $price['sale_price']]);
+                ->update(['sale_price' => $price['sale_price'], 'package_quantity' => $price['package_quantity']]);
         }
 
         $nfeImport->update(['price_table_published_at' => $nfeImport->price_table_published_at ?? now()]);

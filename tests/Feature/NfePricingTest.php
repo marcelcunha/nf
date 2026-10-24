@@ -53,10 +53,11 @@ test('sale prices are saved for the suppliers products', function () {
     $import = NfeImport::factory()->for($supplier, 'supplier')->create();
 
     $this->actingAs(User::factory()->create())
-        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '12.5']]])
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '12.5', 'package_quantity' => 12]]])
         ->assertSessionHasNoErrors();
 
-    expect($product->fresh()->sale_price)->toBe('12.5000');
+    expect($product->fresh()->sale_price)->toBe('12.5000')
+        ->and($product->fresh()->package_quantity)->toBe(12);
 });
 
 test('prices of other suppliers products are ignored', function () {
@@ -64,7 +65,7 @@ test('prices of other suppliers products are ignored', function () {
     $import = NfeImport::factory()->create();
 
     $this->actingAs(User::factory()->create())
-        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $other->id, 'sale_price' => '9']]]);
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $other->id, 'sale_price' => '9', 'package_quantity' => 1]]]);
 
     expect($other->fresh()->sale_price)->toBeNull();
 });
@@ -74,6 +75,26 @@ test('negative sale price is rejected', function () {
     $import = NfeImport::factory()->create();
 
     $this->actingAs(User::factory()->create())
-        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '-1']]])
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '-1', 'package_quantity' => 1]]])
         ->assertSessionHasErrors('prices.0.sale_price');
 });
+
+test('pricing exposes the saved package quantity of each product', function () {
+    $supplier = Person::factory()->create();
+    Product::factory()->create(['supplier_id' => $supplier->id, 'code' => 'ABC1', 'package_quantity' => 12]);
+    $import = importWithItemTaxes($supplier);
+
+    $this->actingAs(User::factory()->create())
+        ->get("/nfe-importadas/{$import->id}/precificar")
+        ->assertInertia(fn (Assert $page) => $page->where('details.items.0.package_quantity', 12));
+});
+
+test('package quantity must be a positive integer', function (mixed $quantity) {
+    $supplier = Person::factory()->create();
+    $product = Product::factory()->create(['supplier_id' => $supplier->id]);
+    $import = NfeImport::factory()->for($supplier, 'supplier')->create();
+
+    $this->actingAs(User::factory()->create())
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '1', 'package_quantity' => $quantity]]])
+        ->assertSessionHasErrors('prices.0.package_quantity');
+})->with([0, -3, 1.5, null]);

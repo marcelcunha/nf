@@ -25,6 +25,7 @@ class Product extends Model
         'unit',
         'last_unit_cost',
         'sale_price',
+        'package_quantity',
     ];
 
     /**
@@ -35,6 +36,7 @@ class Product extends Model
         return [
             'last_unit_cost' => 'decimal:4',
             'sale_price' => 'decimal:4',
+            'package_quantity' => 'integer',
         ];
     }
 

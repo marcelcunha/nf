@@ -65,7 +65,7 @@ test('saving prices publishes the table to employees', function () {
     $import = NfeImport::factory()->for($supplier, 'supplier')->create();
 
     $this->actingAs(User::factory()->create())
-        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '9.9']]])
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '9.9', 'package_quantity' => 1]]])
         ->assertSessionHasNoErrors();
 
     expect($import->fresh()->price_table_published_at)->not->toBeNull();
@@ -76,7 +76,7 @@ test('saving prices again keeps the original publication date', function () {
     $product = Product::factory()->create(['supplier_id' => $import->supplier_id]);
 
     $this->actingAs(User::factory()->create())
-        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '5']]]);
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '5', 'package_quantity' => 1]]]);
 
     expect($import->fresh()->price_table_published_at->toDateString())->toBe('2026-01-10');
 });
@@ -95,7 +95,7 @@ test('employees cannot save prices or remove a table', function () {
     $employee = User::factory()->employee()->create();
 
     $this->actingAs($employee)
-        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '1']]])
+        ->put("/nfe-importadas/{$import->id}/precificar", ['prices' => [['product_id' => $product->id, 'sale_price' => '1', 'package_quantity' => 1]]])
         ->assertForbidden();
     $this->actingAs($employee)->delete("/nfe-importadas/{$import->id}/publicar")->assertForbidden();
 
