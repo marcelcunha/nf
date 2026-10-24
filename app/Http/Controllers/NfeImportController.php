@@ -42,7 +42,7 @@ class NfeImportController extends Controller
                 ->with('supplier:id,name')
                 ->select(['id', 'access_key', 'supplier_id', 'number', 'series', 'issued_at', 'total', 'items_count', 'price_table_published_at'])
                 ->when($filters['access_key'] ?? null, fn ($query, $accessKey) => $query->where('access_key', 'like', "%{$accessKey}%"))
-                ->when($filters['number'] ?? null, fn ($query, $number) => $query->where('number', $number))
+                ->when($filters['number'] ?? null, fn ($query, $number) => $query->where('number', 'like', "%{$number}%"))
                 ->when($filters['from'] ?? null, fn ($query, $from) => $query->where('issued_at', '>=', Carbon::parse($from)->startOfDay()))
                 ->when($filters['to'] ?? null, fn ($query, $to) => $query->where('issued_at', '<=', Carbon::parse($to)->endOfDay()))
                 ->latest('issued_at')

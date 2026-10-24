@@ -44,14 +44,17 @@ class SefazCertificate extends Model
 
     /**
      * Cadastra (ou substitui) o certificado A1 em uso. O arquivo e a senha são
-     * gravados criptografados com a APP_KEY.
+     * gravados criptografados com a APP_KEY. O registro anterior é apagado, não
+     * atualizado, para não exigir a descriptografia de um valor gravado com outra chave.
      */
     public static function replaceWith(string $pfxContents, string $password): self
     {
         $pfxContents = app(PfxNormalizer::class)->normalize($pfxContents, $password);
         $certificate = Certificate::readPfx($pfxContents, $password);
 
-        $record = self::query()->firstOrNew();
+        self::query()->delete();
+
+        $record = new self;
         $record->fill([
             'pfx' => base64_encode($pfxContents),
             'password' => $password,
