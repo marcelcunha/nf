@@ -1,6 +1,8 @@
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
+import { Printer } from 'lucide-react';
 
 interface Props {
     table: { id: number; number: number; series: number; supplier: string; published_at: string };
@@ -18,15 +20,21 @@ export default function PriceTablesShow({ table, items }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`Tabela de preço · ${table.supplier}`} />
-            <div className="flex flex-col gap-5 p-4 md:px-8 md:py-7">
-                <div>
-                    <h1 className="text-2xl font-bold">{table.supplier}</h1>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                        Nota {table.number}/{table.series} · publicada em {new Date(table.published_at).toLocaleDateString('pt-BR')}
-                    </p>
+            <div className="flex flex-col gap-5 p-4 md:px-8 md:py-7 print:p-0">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold">{table.supplier}</h1>
+                        <p className="text-muted-foreground mt-1 text-sm">
+                            Nota {table.number}/{table.series} · publicada em {new Date(table.published_at).toLocaleDateString('pt-BR')}
+                        </p>
+                    </div>
+                    <Button variant="outline" onClick={() => window.print()} className="print:hidden">
+                        <Printer />
+                        Imprimir
+                    </Button>
                 </div>
 
-                <div className="bg-card overflow-x-auto rounded-xl border">
+                <div className="bg-card overflow-x-auto rounded-xl border print:overflow-visible print:border-0">
                     <table className="w-full text-sm">
                         <thead className="bg-muted text-muted-foreground text-left">
                             <tr>

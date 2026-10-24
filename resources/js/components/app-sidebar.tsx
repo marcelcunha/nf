@@ -25,6 +25,9 @@ const adminNavItems: NavItem[] = [
         icon: FileText,
     },
     priceTablesItem,
+];
+
+const administrationNavItems: NavItem[] = [
     {
         title: 'Funcionários',
         url: '/funcionarios',
@@ -41,7 +44,8 @@ const employeeNavItems: NavItem[] = [priceTablesItem];
 
 export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
-    const navItems = auth.user.role === 'admin' ? adminNavItems : employeeNavItems;
+    const isAdmin = auth.user.role === 'admin';
+    const navItems = isAdmin ? adminNavItems : employeeNavItems;
 
     return (
         <Sidebar collapsible="offcanvas" variant="sidebar">
@@ -59,6 +63,7 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={navItems} />
+                {isAdmin && <NavMain items={administrationNavItems} label="Administração" />}
             </SidebarContent>
 
             <SidebarFooter>
