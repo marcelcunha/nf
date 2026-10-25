@@ -19,6 +19,11 @@ class ImportNfesFromSefaz implements ShouldBeUnique, ShouldQueue
      */
     private const CONSUMPTION_ABUSE_STATUS = 656;
 
+    /**
+     * Tempo de espera exigido pela SEFAZ após o consumo indevido, com folga.
+     */
+    private const BLOCK_MINUTES = 65;
+
     public int $tries = 3;
 
     public int $uniqueFor = 3600;
@@ -35,6 +40,10 @@ class ImportNfesFromSefaz implements ShouldBeUnique, ShouldQueue
     {
         $state = SefazSyncState::current();
 
+        if ($state->isBlocked()) {
+            return;
+        }
+
         for ($batchCount = 0; $batchCount < config('sefaz.max_batches_per_run'); $batchCount++) {
             $batch = $client->fetchSince($state->last_nsu);
 
@@ -42,6 +51,7 @@ class ImportNfesFromSefaz implements ShouldBeUnique, ShouldQueue
                 $exception = new RuntimeException("SEFAZ retornou {$batch->statusCode}: {$batch->statusMessage}");
 
                 if ($batch->statusCode === self::CONSUMPTION_ABUSE_STATUS) {
+                    $state->update(['blocked_until' => now()->addMinutes(self::BLOCK_MINUTES)]);
                     $this->fail($exception);
 
                     return;

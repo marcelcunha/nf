@@ -29,6 +29,8 @@ class NfeImportController extends Controller
             'to' => ['nullable', 'date', 'after_or_equal:from'],
         ]);
 
+        $syncState = SefazSyncState::current();
+
         return Inertia::render('nfe-imports/index', [
             'filters' => [
                 'access_key' => $filters['access_key'] ?? '',
@@ -36,7 +38,8 @@ class NfeImportController extends Controller
                 'from' => $filters['from'] ?? '',
                 'to' => $filters['to'] ?? '',
             ],
-            'lastRunAt' => SefazSyncState::current()->last_run_at,
+            'lastRunAt' => $syncState->last_run_at,
+            'blockedUntil' => $syncState->isBlocked() ? $syncState->blocked_until : null,
             'scheduleTimes' => config('sefaz.schedule_times'),
             'imports' => NfeImport::query()
                 ->with('supplier:id,name')
@@ -53,6 +56,10 @@ class NfeImportController extends Controller
 
     public function store(): RedirectResponse
     {
+        if (SefazSyncState::current()->isBlocked()) {
+            return back()->withErrors(['import' => 'A SEFAZ bloqueou novas consultas. Aguarde o prazo informado na tela.']);
+        }
+
         ImportNfesFromSefaz::dispatch();
 
         return back()->with('success', 'Importação enviada para a fila.');

@@ -33,11 +33,13 @@ export default function NfeImportsIndex({
     imports,
     filters,
     lastRunAt,
+    blockedUntil,
     scheduleTimes,
 }: {
     imports: Paginated<NfeImport>;
     filters: Filters;
     lastRunAt: string | null;
+    blockedUntil: string | null;
     scheduleTimes: string[];
 }) {
     const [processing, setProcessing] = useState(false);
@@ -81,7 +83,12 @@ export default function NfeImportsIndex({
                     </div>
                     <div className="flex items-center gap-3">
                         {queued && <span className="text-sm text-green-600">Importação enviada para a fila.</span>}
-                        <Button onClick={importNow} disabled={processing}>
+                        {blockedUntil && (
+                            <span className="text-sm text-amber-600">
+                                SEFAZ bloqueada até {new Date(blockedUntil).toLocaleString('pt-BR')}.
+                            </span>
+                        )}
+                        <Button onClick={importNow} disabled={processing || !!blockedUntil}>
                             Importar agora
                         </Button>
                     </div>

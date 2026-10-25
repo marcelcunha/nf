@@ -3,6 +3,7 @@
 use App\Jobs\ImportNfesFromSefaz;
 use App\Models\NfeImport;
 use App\Models\SefazSyncState;
+use App\Models\User;
 use App\Services\Sefaz\DistributionBatch;
 use App\Services\Sefaz\SefazClient;
 use Illuminate\Console\Scheduling\Schedule;
@@ -52,7 +53,36 @@ test('job fails without retries on sefaz status 656', function () {
 
     app()->call([$job, 'handle']);
 
-    expect(SefazSyncState::current()->last_nsu)->toBe('0');
+    expect(SefazSyncState::current()->last_nsu)->toBe('0')
+        ->and(SefazSyncState::current()->isBlocked())->toBeTrue();
+});
+
+test('job does not query sefaz while blocked', function () {
+    SefazSyncState::current()->update(['blocked_until' => now()->addMinutes(30)]);
+
+    $this->mock(SefazClient::class)->shouldNotReceive('fetchSince');
+
+    app()->call([new ImportNfesFromSefaz, 'handle']);
+});
+
+test('job queries sefaz again after block expires', function () {
+    SefazSyncState::current()->update(['blocked_until' => now()->subMinute()]);
+
+    $this->mock(SefazClient::class)
+        ->shouldReceive('fetchSince')->once()
+        ->andReturn(new DistributionBatch(137, 'Nenhum documento', '0', '0', []));
+
+    app()->call([new ImportNfesFromSefaz, 'handle']);
+});
+
+test('command and manual import do not dispatch while blocked', function () {
+    Queue::fake();
+    SefazSyncState::current()->update(['blocked_until' => now()->addMinutes(30)]);
+
+    $this->artisan('nfe:import')->assertSuccessful();
+    $this->actingAs(User::factory()->create())->post('/nfe-importadas')->assertSessionHasErrors('import');
+
+    Queue::assertNothingPushed();
 });
 
 test('command dispatches job', function () {
