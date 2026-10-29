@@ -7,6 +7,7 @@ use App\Services\Sefaz\DistributionBatch;
 use App\Services\Sefaz\SefazClient;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Queue\Job;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 
 test('job imports documents and advances nsu', function () {
@@ -91,12 +92,16 @@ test('command dispatches job', function () {
     Queue::assertPushed(ImportNfesFromSefaz::class);
 });
 
-test('import is scheduled at expected times', function () {
-    $expressions = collect(app(Schedule::class)->events())
-        ->filter(fn ($event) => str_contains($event->command, 'nfe:import'))
-        ->map->expression->sort()->values()->all();
+test('import runs only at the configured times', function () {
+    SefazSyncState::current()->update(['schedule_times' => ['08:15']]);
+    $event = collect(app(Schedule::class)->events())
+        ->first(fn ($event) => str_contains($event->command, 'nfe:import'));
 
-    expect($expressions)->toBe(['10 12 * * *', '30 6 * * *', '40 18 * * *']);
+    $this->travelTo(Carbon::parse('2026-03-10 08:15', config('sefaz.schedule_timezone')));
+    expect($event->filtersPass($this->app))->toBeTrue();
+
+    $this->travelTo(Carbon::parse('2026-03-10 08:16', config('sefaz.schedule_timezone')));
+    expect($event->filtersPass($this->app))->toBeFalse();
 });
 
 test('client parses distribution response', function () {

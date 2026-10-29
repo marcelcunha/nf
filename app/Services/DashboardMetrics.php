@@ -211,7 +211,7 @@ class DashboardMetrics
         $timezone = config('sefaz.schedule_timezone');
         $now = now($timezone);
 
-        $candidates = collect(config('sefaz.schedule_times'))
+        $candidates = collect(SefazSyncState::current()->scheduleTimes())
             ->map(fn (string $time) => Carbon::parse($time, $timezone))
             ->sort()
             ->values();

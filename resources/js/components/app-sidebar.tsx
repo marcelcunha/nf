@@ -4,7 +4,7 @@ import { SidebarAppearanceToggle } from '@/components/sidebar-appearance-toggle'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { FileText, LayoutGrid, ShieldCheck, Tags, Users } from 'lucide-react';
+import { Clock, FileText, LayoutGrid, ShieldCheck, Tags, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const priceTablesItem: NavItem = {
@@ -37,6 +37,11 @@ const administrationNavItems: NavItem[] = [
         title: 'Certificado digital',
         url: '/certificado',
         icon: ShieldCheck,
+    },
+    {
+        title: 'Horários de importação',
+        url: '/agendamento',
+        icon: Clock,
     },
 ];
 

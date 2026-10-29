@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ImportScheduleController;
 use App\Http\Controllers\NfeImportController;
 use App\Http\Controllers\PriceTableController;
 use App\Http\Controllers\SefazCertificateController;
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'active', 'password.changed'])->group(function () {
 
         Route::get('certificado', [SefazCertificateController::class, 'edit'])->name('certificate.edit');
         Route::post('certificado', [SefazCertificateController::class, 'update'])->name('certificate.update');
+
+        Route::get('agendamento', [ImportScheduleController::class, 'edit'])->name('import-schedule.edit');
+        Route::put('agendamento', [ImportScheduleController::class, 'update'])->name('import-schedule.update');
 
         Route::get('funcionarios', [EmployeeController::class, 'index'])->name('employees.index');
         Route::get('funcionarios/criar', [EmployeeController::class, 'create'])->name('employees.create');

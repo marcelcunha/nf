@@ -14,6 +14,8 @@ test('employees are forbidden from admin pages', function (string $method, strin
     ['PUT', '/nfe-importadas/1/precificar'],
     ['DELETE', '/nfe-importadas/1/publicar'],
     ['GET', '/certificado'],
+    ['GET', '/agendamento'],
+    ['PUT', '/agendamento'],
     ['GET', '/funcionarios'],
     ['GET', '/funcionarios/criar'],
     ['POST', '/funcionarios'],

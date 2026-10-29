@@ -39,7 +39,7 @@ class NfeImportController extends Controller
             ],
             'lastRunAt' => $syncState->last_run_at,
             'blockedUntil' => $syncState->isBlocked() ? $syncState->blocked_until : null,
-            'scheduleTimes' => config('sefaz.schedule_times'),
+            'scheduleTimes' => $syncState->scheduleTimes(),
             'imports' => NfeImport::query()
                 ->with('supplier:id,name')
                 ->select(['id', 'access_key', 'supplier_id', 'number', 'series', 'issued_at', 'total', 'items_count', 'price_table_published_at'])
