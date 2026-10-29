@@ -42,8 +42,6 @@ export default function NfeImportsIndex({
     blockedUntil: string | null;
     scheduleTimes: string[];
 }) {
-    const [processing, setProcessing] = useState(false);
-    const [queued, setQueued] = useState(false);
     const [form, setForm] = useState<Filters>(filters);
     const [filtersOpen, setFiltersOpen] = useState(false);
     const hasActiveFilters = Object.values(filters).some((value) => value !== '');
@@ -57,18 +55,6 @@ export default function NfeImportsIndex({
         applyFilters(empty);
     };
 
-    const importNow = () =>
-        router.post(
-            '/nfe-importadas',
-            {},
-            {
-                preserveScroll: true,
-                onStart: () => setProcessing(true),
-                onSuccess: () => setQueued(true),
-                onFinish: () => setProcessing(false),
-            },
-        );
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="NF-es importadas" />
@@ -81,17 +67,9 @@ export default function NfeImportsIndex({
                             {lastRunAt ? new Date(lastRunAt).toLocaleString('pt-BR') : 'nunca'}.
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                        {queued && <span className="text-sm text-green-600">Importação enviada para a fila.</span>}
-                        {blockedUntil && (
-                            <span className="text-sm text-amber-600">
-                                SEFAZ bloqueada até {new Date(blockedUntil).toLocaleString('pt-BR')}.
-                            </span>
-                        )}
-                        <Button onClick={importNow} disabled={processing || !!blockedUntil}>
-                            Importar agora
-                        </Button>
-                    </div>
+                    {blockedUntil && (
+                        <span className="text-sm text-amber-600">SEFAZ bloqueada até {new Date(blockedUntil).toLocaleString('pt-BR')}.</span>
+                    )}
                 </div>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                     <div className="flex min-w-0 flex-1 flex-col gap-4">

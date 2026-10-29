@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateNfePricingRequest;
-use App\Jobs\ImportNfesFromSefaz;
 use App\Models\NfeImport;
 use App\Models\Person;
 use App\Models\Product;
@@ -52,17 +51,6 @@ class NfeImportController extends Controller
                 ->paginate(10)
                 ->withQueryString(),
         ]);
-    }
-
-    public function store(): RedirectResponse
-    {
-        if (SefazSyncState::current()->isBlocked()) {
-            return back()->withErrors(['import' => 'A SEFAZ bloqueou novas consultas. Aguarde o prazo informado na tela.']);
-        }
-
-        ImportNfesFromSefaz::dispatch();
-
-        return back()->with('success', 'Importação enviada para a fila.');
     }
 
     public function show(NfeImport $nfeImport, NfeXmlReader $reader): Response

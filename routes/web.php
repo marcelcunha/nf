@@ -20,7 +20,6 @@ Route::middleware(['auth', 'active', 'password.changed'])->group(function () {
         Route::get('nfe-importadas/{nfeImport}/precificar', [NfeImportController::class, 'pricing'])->name('nfe-importadas.pricing');
         Route::put('nfe-importadas/{nfeImport}/precificar', [NfeImportController::class, 'updatePricing'])->name('nfe-importadas.pricing.update');
         Route::delete('nfe-importadas/{nfeImport}/publicar', [NfeImportController::class, 'unpublish'])->name('nfe-importadas.unpublish');
-        Route::post('nfe-importadas', [NfeImportController::class, 'store'])->name('nfe-importadas.store');
 
         Route::get('certificado', [SefazCertificateController::class, 'edit'])->name('certificate.edit');
         Route::post('certificado', [SefazCertificateController::class, 'update'])->name('certificate.update');

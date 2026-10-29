@@ -1,9 +1,7 @@
 <?php
 
-use App\Jobs\ImportNfesFromSefaz;
 use App\Models\NfeImport;
 use App\Models\User;
-use Illuminate\Support\Facades\Queue;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('guests are redirected to login', function () {
@@ -12,8 +10,7 @@ test('guests are redirected to login', function () {
     $this->get('/nfe-importadas/1/danfe')->assertRedirect('/login');
 });
 
-test('nfe imports lists and dispatches import', function () {
-    Queue::fake();
+test('nfe imports lists imports', function () {
     NfeImport::factory()->create();
     $user = User::factory()->create();
 
@@ -22,9 +19,6 @@ test('nfe imports lists and dispatches import', function () {
             ->component('nfe-imports/index')
             ->has('imports.data', 1)
             ->where('scheduleTimes', ['06:30', '12:10', '18:40']));
-
-    $this->actingAs($user)->post('/nfe-importadas')->assertRedirect();
-    Queue::assertPushed(ImportNfesFromSefaz::class);
 });
 
 test('nfe imports can be filtered by key, number and period', function () {
